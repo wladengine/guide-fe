@@ -24,7 +24,7 @@ import { items } from '../../../App'
 
 const DocumentList = (props) => {
   const [documents, setDocuments] = React.useState(null)
-  fetch('http://62.3.58.179:3333/documents', {
+  fetch('http://487346.msk-kvm.ru:3333/documents', {
     method: 'GET', // *GET, POST, PUT, DELETE, etc.
     mode: 'same-origin',
     headers: {
