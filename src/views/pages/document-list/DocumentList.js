@@ -26,7 +26,7 @@ const DocumentList = (props) => {
   const [documents, setDocuments] = React.useState(null)
   fetch('http://487346.msk-kvm.ru:3333/documents', {
     method: 'GET', // *GET, POST, PUT, DELETE, etc.
-    mode: 'same-origin',
+    mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
     },
