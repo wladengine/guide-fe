@@ -1,6 +1,7 @@
 {
   "name": "@coreui/coreui-free-react-admin-template",
   "version": "4.4.0",
+  "proxy": "http://62.3.58.179/",
   "description": "CoreUI Free React Admin Template",
   "homepage": ".",
   "bugs": {

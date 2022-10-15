@@ -24,15 +24,16 @@ import CIcon from '@coreui/icons-react'
 import { cilHeader, cilCalendar, cilPen } from '@coreui/icons'
 import { useSearchParams } from 'react-router-dom'
 
-const Document = () => {
+const Article = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const id = searchParams.get('id')
-  const [articles, setArticles] = React.useState(null)
+
+  const [number, setNumber] = React.useState('')
+  const [name, setName] = React.useState('')
   const [segments, setSegments] = React.useState(null)
-  const [filteredArticles, setFilteredArticles] = React.useState(null)
-  const [rowSegments, setRowSegments] = React.useState(null)
+
   useEffect(() => {
-    fetch(`http://487346.msk-kvm.ru:3333/documents/${id}`, {
+    fetch(`http://487346.msk-kvm.ru:3333/articles/${id}`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -45,29 +46,8 @@ const Document = () => {
         return response.json()
       })
       .then((data) => {
-        setName(data.short_name)
-        setDate(data.date)
-        setDescription(data.full_name)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  }, [])
-  useEffect(() => {
-    fetch(`http://487346.msk-kvm.ru:3333/documents/${id}/articles`, {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      redirect: 'follow',
-      referrerPolicy: 'no-referrer',
-    })
-      .then((response) => {
-        return response.json()
-      })
-      .then((data) => {
-        setArticles(data)
+        setNumber(data.number)
+        setName(data.name)
       })
       .catch(function (error) {
         console.log(error)
@@ -87,27 +67,30 @@ const Document = () => {
         return response.json()
       })
       .then((data) => {
-        setSegments(data)
+        setSegments(
+          data
+            .sort((a, b) => {
+              return a.number - b.number
+            })
+            .filter((x) => x.article_id == id),
+        )
       })
       .catch(function (error) {
         console.log(error)
       })
   }, [])
 
-  const [name, setName] = React.useState('')
-  const [date, setDate] = React.useState('')
-  const [description, setDescription] = React.useState('')
   const rowsSegments =
-    articles == null ? (
+    segments == null ? (
       <></>
     ) : (
-      articles.sort().map((val, index) => {
+      segments.map((val, index) => {
         return (
           <CTableRow key={index}>
             <CTableHeaderCell scope="row">{val.number}</CTableHeaderCell>
-            <CTableDataCell>{val.name}</CTableDataCell>
+            <CTableDataCell>{val.text}</CTableDataCell>
             <CTableDataCell>
-              <CButton href={`../#/article?id=${val.id}`} size="sm">
+              <CButton href={`../#/segment?id=${val.id}`} size="sm">
                 Просмотр
               </CButton>
             </CTableDataCell>
@@ -124,31 +107,18 @@ const Document = () => {
               <CCard className="p-4">
                 <CCardBody>
                   <CForm action={'./document'} method={'post'}>
-                    <h1>Документ</h1>
+                    <h1>Статья</h1>
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilHeader} />
                       </CInputGroupText>
                       <CFormInput
                         type="text"
-                        placeholder="Название документа"
-                        autoComplete="document_name"
-                        value={name}
+                        placeholder="Номер статьи"
+                        autoComplete="article_number"
+                        value={number}
                         onChange={(e) => {
-                          setName(e.target.value)
-                        }}
-                      />
-                    </CInputGroup>
-                    <CInputGroup className="mb-3">
-                      <CInputGroupText>
-                        <CIcon icon={cilCalendar} />
-                      </CInputGroupText>
-                      <CFormInput
-                        placeholder="Дата документа"
-                        autoComplete="document_date"
-                        value={date}
-                        onChange={(e) => {
-                          setDate(e.target.value)
+                          setNumber(e.target.value)
                         }}
                       />
                     </CInputGroup>
@@ -157,12 +127,12 @@ const Document = () => {
                         <CIcon icon={cilPen} />
                       </CInputGroupText>
                       <CFormTextarea
-                        placeholder="Описание документа"
-                        autoComplete="document_description"
+                        placeholder="Текст статьи"
+                        autoComplete="article_text"
                         rows={5}
-                        value={description}
+                        value={name}
                         onChange={(e) => {
-                          setDescription(e.target.value)
+                          setName(e.target.value)
                         }}
                       />
                     </CInputGroup>
@@ -174,12 +144,12 @@ const Document = () => {
                       </CCol>
                     </CRow>
                   </CForm>
-                  <CHeader>Статьи</CHeader>
+                  <CHeader>Абзацы</CHeader>
                   <CTable>
                     <CTableHead>
                       <CTableRow>
                         <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Статья</CTableHeaderCell>
+                        <CTableHeaderCell scope="col"></CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>{rowsSegments}</CTableBody>
@@ -194,4 +164,4 @@ const Document = () => {
   )
 }
 
-export default Document
+export default Article

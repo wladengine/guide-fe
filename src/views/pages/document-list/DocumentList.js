@@ -1,16 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   CTable,
   CButton,
-  CCard,
-  CCardBody,
-  CCardGroup,
   CCol,
-  CContainer,
-  CForm,
-  CFormInput,
-  CInputGroup,
-  CInputGroupText,
   CRow,
   CTableHead,
   CTableRow,
@@ -24,28 +16,27 @@ import { items } from '../../../App'
 
 const DocumentList = (props) => {
   const [documents, setDocuments] = React.useState(null)
-  fetch('http://487346.msk-kvm.ru:3333/documents', {
-    method: 'GET', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    redirect: 'follow',
-    referrerPolicy: 'no-referrer',
-  })
-    .then((response) => {
-      console.log(response)
-      console.log(response.status)
-      return response.json() // data into json
+  useEffect(() => {
+    fetch('http://487346.msk-kvm.ru:3333/documents', {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
     })
-    .then((data) => {
-      // Here we can use the response Data
-      console.log(data)
-      setDocuments(data)
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+      .then((response) => {
+        return response.json()
+      })
+      .then((data) => {
+        setDocuments(data)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }, [])
+
   const rows =
     documents == null
       ? null
@@ -53,11 +44,13 @@ const DocumentList = (props) => {
           return (
             <CTableRow key={index}>
               <CTableHeaderCell scope="row"></CTableHeaderCell>
-              <CTableDataCell>{val.name}</CTableDataCell>
+              <CTableDataCell>{val.short_name}</CTableDataCell>
+              <CTableDataCell>{val.full_name}</CTableDataCell>
               <CTableDataCell>{val.date}</CTableDataCell>
-              <CTableDataCell>{val.description}</CTableDataCell>
               <CTableDataCell>
-                <CButton size="sm">Редактировать</CButton>
+                <CButton href={`../#/document?id=${val.id}`} size="sm">
+                  Редактировать
+                </CButton>
               </CTableDataCell>
             </CTableRow>
           )
@@ -77,7 +70,7 @@ const DocumentList = (props) => {
       </CTable>
       <CRow>
         <CCol lg={4}>
-          <CButton size="lg">Add</CButton>
+          <CButton size="lg">Добавить</CButton>
         </CCol>
       </CRow>
     </>
