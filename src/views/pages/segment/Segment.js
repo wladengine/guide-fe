@@ -26,23 +26,24 @@ import { useSearchParams } from 'react-router-dom'
 import { useContext } from 'react'
 import AuthContext from '../../../components/AuthContext'
 
-const Article = () => {
+const Segment = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const id = searchParams.get('id')
-  const param_document = searchParams.get('document') ?? -1
+  const param_article = searchParams.get('article') ?? -1
 
   const [number, setNumber] = React.useState('')
-  const [name, setName] = React.useState('')
+  const [text, setText] = React.useState('')
+  const [document, setDocument] = React.useState('')
   const [documentName, setDocumentName] = React.useState('')
-  const [document, setDocument] = React.useState(param_document)
-  const [segmentIds, setSegmentIds] = React.useState(null)
-  const [segments, setSegments] = React.useState(null)
+  const [articleNumber, setArticleNumber] = React.useState('')
+  const [featuresData, setFeaturesData] = React.useState(null)
+  const [article, setArticle] = React.useState(param_article)
   const [authToken] = useContext(AuthContext)
 
   const baseUrl = 'http://487346.msk-kvm.ru:3333'
 
   useEffect(() => {
-    fetch(`${baseUrl}/articles/${id}`, {
+    fetch(`${baseUrl}/segments/${id}`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -56,10 +57,9 @@ const Article = () => {
       })
       .then((data) => {
         setNumber(data.number)
-        setName(data.name)
-        setDocument(data.document)
-        setSegmentIds(data.segments)
-        fetch(`${baseUrl}/documents/${data.document}`, {
+        setText(data.text)
+        setArticle(data.article_id)
+        fetch(`${baseUrl}/articles/${data.article_id}`, {
           method: 'GET',
           mode: 'cors',
           headers: {
@@ -72,7 +72,26 @@ const Article = () => {
             return response.json()
           })
           .then((data) => {
-            setDocumentName(data.short_name)
+            setDocument(data.document)
+            setArticleNumber(data.number)
+            fetch(`${baseUrl}/documents/${data.document}`, {
+              method: 'GET',
+              mode: 'cors',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              redirect: 'follow',
+              referrerPolicy: 'no-referrer',
+            })
+              .then((response) => {
+                return response.json()
+              })
+              .then((data) => {
+                setDocumentName(data.short_name)
+              })
+              .catch(function (error) {
+                console.log(error)
+              })
           })
           .catch(function (error) {
             console.log(error)
@@ -83,7 +102,7 @@ const Article = () => {
       })
   }, [])
   useEffect(() => {
-    fetch(`${baseUrl}/articles/${id}/segments`, {
+    fetch(`${baseUrl}/segments/${id}/features`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -96,25 +115,18 @@ const Article = () => {
         return response.json()
       })
       .then((data) => {
-        setSegments(
-          data
-            .sort((a, b) => {
-              return a.number - b.number
-            })
-            .filter((x) => x.article_id == id),
-        )
+        setFeaturesData(data)
       })
       .catch(function (error) {
         console.log(error)
       })
   }, [])
 
-  const saveArticle = () => {
+  const saveSegment = () => {
     const reqBody = {
-      document: parseInt(document),
+      article_id: parseInt(article),
       number: parseFloat(number),
-      name: name,
-      segments: segmentIds,
+      text: text,
     }
     const reqJSON = JSON.stringify(reqBody)
     const isPOST = (id ?? -1) <= 0
@@ -124,33 +136,32 @@ const Article = () => {
       body: reqJSON,
       redirect: 'follow',
     }
-    const fetchUrl = isPOST ? `${baseUrl}/articles` : `${baseUrl}/articles/${id}`
+    const fetchUrl = isPOST ? `${baseUrl}/segments` : `${baseUrl}/segments/${id}`
     fetch(fetchUrl, requestOptions)
       .then((response) => {
         if (!response.ok) {
-          alert('Error while save article')
+          alert('Error while save segments')
           return null
         }
         return response.json()
       })
       .then((data) => {
         console.log(data)
-        window.location = `./#/document?id=${document}`
+        window.location = `./#/article?id=${article}`
       })
       .catch(function (error) {
         console.log(error)
       })
   }
-
-  const rowsSegments =
-    segments == null ? (
+  const rowsFeatures =
+    featuresData == null ? (
       <></>
     ) : (
-      segments.map((val, index) => {
+      featuresData.map((val, index) => {
         return (
           <CTableRow key={index}>
-            <CTableHeaderCell scope="row">{val.number}</CTableHeaderCell>
-            <CTableDataCell>{val.text}</CTableDataCell>
+            <CTableDataCell>{val.product.name}</CTableDataCell>
+            <CTableHeaderCell scope="row">{val.parameter.name}</CTableHeaderCell>
             <CTableDataCell>
               <CButton href={`../#/segment?id=${val.id}`} size="sm">
                 Просмотр
@@ -176,21 +187,24 @@ const Article = () => {
                       <li className="breadcrumb-item">
                         <a href={`./#/document?id=${document}`}>{documentName}</a>
                       </li>
+                      <li className="breadcrumb-item">
+                        <a href={`./#/article?id=${article}`}>ст. {articleNumber}</a>
+                      </li>
                       <li className="breadcrumb-item active" aria-current="page">
-                        ст. {number}
+                        п. {number}
                       </li>
                     </ol>
                   </nav>
                   <CForm action={'./document'} method={'post'}>
-                    <h1>Статья</h1>
+                    <h1>Абзац</h1>
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilHeader} />
                       </CInputGroupText>
                       <CFormInput
                         type="text"
-                        placeholder="Номер статьи"
-                        autoComplete="article_number"
+                        placeholder="Номер абзаца"
+                        autoComplete="segments_number"
                         value={number}
                         onChange={(e) => {
                           setNumber(e.target.value)
@@ -202,12 +216,12 @@ const Article = () => {
                         <CIcon icon={cilPen} />
                       </CInputGroupText>
                       <CFormTextarea
-                        placeholder="Текст статьи"
-                        autoComplete="article_text"
-                        rows={2}
-                        value={name}
+                        placeholder="Текст абзаца"
+                        autoComplete="segments_text"
+                        rows={8}
+                        value={text}
                         onChange={(e) => {
-                          setName(e.target.value)
+                          setText(e.target.value)
                         }}
                       />
                     </CInputGroup>
@@ -216,14 +230,14 @@ const Article = () => {
                         <></>
                       ) : (
                         <CCol xs={6}>
-                          <CButton color="primary" className="px-4" onClick={saveArticle}>
+                          <CButton color="primary" className="px-4" onClick={saveSegment}>
                             Сохранить
                           </CButton>
                         </CCol>
                       )}
                     </CRow>
                   </CForm>
-                  <CHeader>Абзацы</CHeader>
+                  <CHeader>Цели</CHeader>
                   <CTable>
                     <CTableHead>
                       <CTableRow>
@@ -231,23 +245,8 @@ const Article = () => {
                         <CTableHeaderCell scope="col"></CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
-                    <CTableBody>{rowsSegments}</CTableBody>
+                    <CTableBody>{rowsFeatures}</CTableBody>
                   </CTable>
-                  {authToken == null ? (
-                    <></>
-                  ) : (
-                    <CRow>
-                      <CCol xs={6}>
-                        <CButton
-                          color="primary"
-                          className="px-4"
-                          href={`../#/segment?article=${id}`}
-                        >
-                          Добавить
-                        </CButton>
-                      </CCol>
-                    </CRow>
-                  )}
                 </CCardBody>
               </CCard>
             </CCardGroup>
@@ -258,4 +257,4 @@ const Article = () => {
   )
 }
 
-export default Article
+export default Segment

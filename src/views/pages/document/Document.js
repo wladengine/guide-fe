@@ -23,14 +23,17 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilHeader, cilCalendar, cilPen } from '@coreui/icons'
 import { useSearchParams } from 'react-router-dom'
+import { useContext } from 'react'
+import AuthContext from '../../../components/AuthContext'
 
 const Document = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const id = searchParams.get('id')
   const [articles, setArticles] = React.useState(null)
   const [segments, setSegments] = React.useState(null)
-  const [filteredArticles, setFilteredArticles] = React.useState(null)
-  const [rowSegments, setRowSegments] = React.useState(null)
+
+  const [authToken] = useContext(AuthContext)
+
   useEffect(() => {
     fetch(`http://487346.msk-kvm.ru:3333/documents/${id}`, {
       method: 'GET',
@@ -123,6 +126,14 @@ const Document = () => {
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
+                  <ol className="breadcrumb">
+                    <li className="breadcrumb-item">
+                      <a href="./#/document-list">Home</a>
+                    </li>
+                    <li className="breadcrumb-item active" aria-current="page">
+                      {name}
+                    </li>
+                  </ol>
                   <CForm action={'./document'} method={'post'}>
                     <h1>Документ</h1>
                     <CInputGroup className="mb-3">
@@ -159,7 +170,7 @@ const Document = () => {
                       <CFormTextarea
                         placeholder="Описание документа"
                         autoComplete="document_description"
-                        rows={5}
+                        rows={2}
                         value={description}
                         onChange={(e) => {
                           setDescription(e.target.value)
@@ -184,6 +195,21 @@ const Document = () => {
                     </CTableHead>
                     <CTableBody>{rowsSegments}</CTableBody>
                   </CTable>
+                  {authToken == null ? (
+                    <></>
+                  ) : (
+                    <CRow>
+                      <CCol xs={6}>
+                        <CButton
+                          color="primary"
+                          className="px-4"
+                          href={`../#/article?document=${id}`}
+                        >
+                          Добавить
+                        </CButton>
+                      </CCol>
+                    </CRow>
+                  )}
                 </CCardBody>
               </CCard>
             </CCardGroup>

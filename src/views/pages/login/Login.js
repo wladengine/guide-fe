@@ -1,5 +1,5 @@
-import React from 'react'
-import AuthContext from './components/AuthContext'
+import React, { useContext } from 'react'
+import AuthContext from '../../../components/AuthContext'
 import {
   CButton,
   CCard,
@@ -17,7 +17,7 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
-  const { auth, setAuth } = React.useContext(AuthContext)
+  const [authToken, setAuthToken] = useContext(AuthContext)
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const makeAuth = () => {
@@ -27,7 +27,6 @@ const Login = () => {
       body: `{ "Email": "${email}", "Pass": "${password}" }`,
       redirect: 'follow',
     }
-
     fetch('http://62.3.58.179:3333/login', requestOptions)
       .then((response) => {
         if (!response.ok) {
@@ -37,8 +36,9 @@ const Login = () => {
         return response.json()
       })
       .then((data) => {
-        console.log(data)
-        setAuth(data.Token)
+        setAuthToken(data.Token)
+        document.cookie = `authToken=${data.Token}`
+        console.log(authToken)
       })
       .catch(function (error) {
         console.log(error)
