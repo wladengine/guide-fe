@@ -11,10 +11,10 @@ import {
   CTableDataCell,
 } from '@coreui/react'
 
-const DocumentList = (props) => {
-  const [documents, setDocuments] = React.useState(null)
+const FeatureList = (props) => {
+  const [features, setFeatures] = React.useState(null)
   useEffect(() => {
-    fetch('http://487346.msk-kvm.ru:3333/documents', {
+    fetch('http://487346.msk-kvm.ru:3333/features', {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       mode: 'cors',
       headers: {
@@ -27,7 +27,7 @@ const DocumentList = (props) => {
         return response.json()
       })
       .then((data) => {
-        setDocuments(data)
+        setFeatures(data)
       })
       .catch(function (error) {
         console.log(error)
@@ -35,17 +35,17 @@ const DocumentList = (props) => {
   }, [])
 
   const rows =
-    documents == null
+    features == null
       ? null
-      : documents.map((val, index) => {
+      : features.map((val, index) => {
           return (
             <CTableRow key={index}>
               <CTableHeaderCell scope="row"></CTableHeaderCell>
-              <CTableDataCell>{val.short_name}</CTableDataCell>
-              <CTableDataCell>{val.full_name}</CTableDataCell>
-              <CTableDataCell>{val.date}</CTableDataCell>
+              <CTableDataCell>{val.product.short_name}</CTableDataCell>
+              <CTableDataCell>{val.parameter.name}</CTableDataCell>
+              <CTableDataCell>{val.summary}</CTableDataCell>
               <CTableDataCell>
-                <CButton href={`../#/document?id=${val.id}`} size="sm">
+                <CButton href={`../#/feature?id=${val.id}`} size="sm">
                   Редактировать
                 </CButton>
               </CTableDataCell>
@@ -58,8 +58,8 @@ const DocumentList = (props) => {
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell scope="col">#</CTableHeaderCell>
-            <CTableHeaderCell scope="col">ФЗ</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Дата</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Продукт</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Параметр</CTableHeaderCell>
             <CTableHeaderCell scope="col">Описание</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
@@ -67,11 +67,13 @@ const DocumentList = (props) => {
       </CTable>
       <CRow>
         <CCol lg={4}>
-          <CButton size="lg">Добавить</CButton>
+          <CButton size="lg" href={'./#/feature?id=-1'}>
+            Добавить
+          </CButton>
         </CCol>
       </CRow>
     </>
   )
 }
 
-export default DocumentList
+export default FeatureList

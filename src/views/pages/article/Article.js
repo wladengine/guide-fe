@@ -97,11 +97,9 @@ const Article = () => {
       })
       .then((data) => {
         setSegments(
-          data
-            .sort((a, b) => {
-              return a.number - b.number
-            })
-            .filter((x) => x.article_id == id),
+          data.sort((a, b) => {
+            return a.number - b.number
+          }),
         )
       })
       .catch(function (error) {

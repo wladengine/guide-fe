@@ -17,9 +17,11 @@ const Login = React.lazy(() => import('./views/pages/login/Login'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 const Document = React.lazy(() => import('./views/pages/document/Document'))
+const Feature = React.lazy(() => import('./views/pages/feature/Feature'))
 const Article = React.lazy(() => import('./views/pages/article/Article'))
 const Segment = React.lazy(() => import('./views/pages/segment/Segment'))
 const DocumentsList = React.lazy(() => import('./views/pages/document-list/DocumentList'))
+const FeatureList = React.lazy(() => import('./views/pages/feature-list/FeatureList'))
 
 const App = () => {
   let token = getCookie('authToken')
@@ -31,6 +33,7 @@ const App = () => {
           <Routes>
             <Route exact path="/login" name="Login Page" element={<Login />} />
             <Route exact path="/document" name="Документ" element={<Document id={-1} />} />
+            <Route exact path="/feature" name="Характеристика" element={<Feature id={-1} />} />
             <Route exact path="/article" name="Статья" element={<Article id={-1} />} />
             <Route exact path="/segment" name="Абзац" element={<Segment id={-1} />} />
             <Route
@@ -38,6 +41,12 @@ const App = () => {
               path="/documents-list"
               name="Документы"
               element={<DocumentsList id={-1} />}
+            />
+            <Route
+              exact
+              path="/feature-list"
+              name="Характеристики"
+              element={<FeatureList id={-1} />}
             />
             <Route exact path="/404" name="Page 404" element={<Page404 />} />
             <Route exact path="/500" name="Page 500" element={<Page500 />} />
