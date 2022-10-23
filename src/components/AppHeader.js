@@ -14,9 +14,9 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
 
-import { AppBreadcrumb } from './index'
-import { AppHeaderDropdown } from './header/index'
-import { logo } from 'src/assets/brand/logo'
+import { AppBreadcrumb } from './index.js'
+import { AppHeaderDropdown } from './header/index.js'
+import { logo } from 'src/assets/brand/logo.js'
 
 const AppHeader = () => {
   const dispatch = useDispatch()

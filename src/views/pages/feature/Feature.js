@@ -25,10 +25,11 @@ import { cilPen } from '@coreui/icons'
 import { useSearchParams } from 'react-router-dom'
 import { useContext } from 'react'
 import AuthContext from '../../../components/AuthContext'
+import { Modal } from '@coreui/coreui'
 
 const Feature = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const id = searchParams.get('id')
+  const [id, setId] = React.useState(searchParams.get('id'))
   const [savedSegmentsIds, setSavedSegmentsIds] = React.useState(null)
   const [savedSegments, setSavedSegments] = React.useState(null)
   const [parameters, setParameters] = React.useState(null)
@@ -144,7 +145,7 @@ const Feature = () => {
     if (document_id == null) {
       document_id = document
     }
-    fetch(`http://487346.msk-kvm.ru:3333/documents/${document_id}/articles`, {
+    fetch(`${baseUrl}/documents/${document_id}/articles`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -168,7 +169,7 @@ const Feature = () => {
     if (article_id == null) {
       article_id = article
     }
-    fetch(`http://487346.msk-kvm.ru:3333/articles/${article_id}/segments`, {
+    fetch(`${baseUrl}/articles/${article_id}/segments`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -189,6 +190,7 @@ const Feature = () => {
   }
 
   const [isSuccessfullySaved, setIsSuccessfullySaved] = React.useState(false)
+  const [isMessageUnauthorized, setIsMessageUnauthorized] = React.useState(false)
   const saveFeature = () => {
     console.log(authToken)
     const reqBody = {
@@ -209,6 +211,11 @@ const Feature = () => {
     fetch(fetchUrl, requestOptions)
       .then((response) => {
         if (!response.ok) {
+          if (response.status == '401') {
+            setIsMessageUnauthorized(true)
+          }
+          console.log(response)
+          console.log(response.status)
           alert('Error while save article')
           return null
         }
@@ -216,8 +223,46 @@ const Feature = () => {
       })
       .then((data) => {
         console.log(data)
+        setId(data.id)
         setIsSuccessfullySaved(true)
-        setTimeout(setIsSuccessfullySaved, 5, false)
+        setTimeout(setIsSuccessfullySaved, 5 * 1000, false)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }
+  const deleteFeature = () => {
+    console.log(authToken)
+    const requestOptions = {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/javascript', token: authToken },
+      redirect: 'follow',
+    }
+    fetch(`${baseUrl}/features/${id}`, requestOptions)
+      .then((response) => {
+        console.log(response)
+        if (!response.ok) {
+          if (response.status == '401') {
+            setIsMessageUnauthorized(true)
+          }
+          console.log(response)
+          console.log(response.status)
+          alert('Error while delete feature')
+          return null
+        }
+        return response.json()
+      })
+      .then((data) => {
+        setIsSuccessfullySaved(true)
+        afterDelete()
+        setTimeout(setIsSuccessfullySaved, 5 * 1000, false)
+        setTimeout(
+          () => {
+            window.location = `./#/features`
+          },
+          6 * 1000,
+          false,
+        )
       })
       .catch(function (error) {
         console.log(error)
@@ -250,6 +295,14 @@ const Feature = () => {
       setSavedSegments([...savedSegments, segmentExtended])
       onSaveButton()
     }
+  }
+  const onDeleteButton = () => {
+    const myModal = new Modal('#myModal')
+    myModal.show()
+  }
+  const afterDelete = () => {
+    const myModal = document.getElementById('#myModal')
+    myModal.hide()
   }
 
   const optionsProducts =
@@ -405,7 +458,7 @@ const Feature = () => {
                       <a href="./#/feature-list">Список инструментов по параметрам</a>
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">
-                      {product}
+                      {summary}
                     </li>
                   </ol>
                   <CForm>
@@ -460,11 +513,87 @@ const Feature = () => {
                           Сохранить
                         </CButton>
                       </CCol>
+                      {id > 0 ? (
+                        <CCol xs={4}>
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            data-coreui-toggle="modal"
+                            data-coreui-target="#staticBackdrop"
+                          >
+                            Удалить
+                          </button>
+                          <div
+                            className="modal fade"
+                            id="staticBackdrop"
+                            tabIndex="-1"
+                            aria-labelledby="staticBackdropLabel"
+                            aria-hidden="true"
+                            onClick={onDeleteButton}
+                          >
+                            <div className="modal-dialog">
+                              <div className="modal-content">
+                                <div className="modal-header">
+                                  <h5 className="modal-title" id="deleteModalLabel">
+                                    Удаление
+                                  </h5>
+                                  <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-coreui-dismiss="modal"
+                                    aria-label="Close"
+                                  ></button>
+                                </div>
+                                <div className="modal-body">
+                                  Удалить всю характеристику? Данное действие будет невозможно
+                                  отменить.
+                                </div>
+                                <div className="modal-footer">
+                                  <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    data-coreui-dismiss="modal"
+                                  >
+                                    Отмена
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={deleteFeature}
+                                  >
+                                    Удалить
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CCol>
+                      ) : (
+                        <></>
+                      )}
                     </CRow>
                     {isSuccessfullySaved ? (
-                      <div className="alert alert-success" role="alert">
-                        Сохранено
-                      </div>
+                      <CRow className="mt-3">
+                        <CCol xs={12}>
+                          <div className="alert alert-success" role="alert">
+                            Сохранено
+                          </div>
+                        </CCol>
+                      </CRow>
+                    ) : (
+                      <></>
+                    )}
+                    {isMessageUnauthorized ? (
+                      <CRow className="mt-3">
+                        <CCol xs={12}>
+                          <div className="alert alert-danger" role="alert">
+                            Пользователь не аутентифицирован. <br />
+                            <a href={'./#/login'} className={'alert-link'}>
+                              Войти
+                            </a>
+                          </div>
+                        </CCol>
+                      </CRow>
                     ) : (
                       <></>
                     )}
