@@ -39,7 +39,7 @@ const Parameter = () => {
   const saveParameter = () => {
     const reqBody = {
       name: name,
-      group: group,
+      group: parseInt(group),
     }
     const reqJSON = JSON.stringify(reqBody)
     const isPOST = (id ?? -1) <= 0
