@@ -67,7 +67,9 @@ const DocumentList = (props) => {
       </CTable>
       <CRow>
         <CCol lg={4}>
-          <CButton size="lg">Добавить</CButton>
+          <CButton href={'./#/document?id=-1'} size="lg">
+            Добавить
+          </CButton>
         </CCol>
       </CRow>
     </>

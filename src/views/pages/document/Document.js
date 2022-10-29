@@ -28,14 +28,15 @@ import AuthContext from '../../../components/AuthContext'
 
 const Document = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const id = searchParams.get('id')
+  const [id, setId] = React.useState(searchParams.get('id'))
   const [articles, setArticles] = React.useState(null)
   const [segments, setSegments] = React.useState(null)
 
   const [authToken] = useContext(AuthContext)
+  const baseUrl = 'http://487346.msk-kvm.ru:3333'
 
   useEffect(() => {
-    fetch(`http://487346.msk-kvm.ru:3333/documents/${id}`, {
+    fetch(`${baseUrl}/documents/${id}`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -49,7 +50,7 @@ const Document = () => {
       })
       .then((data) => {
         setName(data.short_name)
-        setDate(data.date)
+        setDate(new Date(data.date).toJSON().substring(0, 10))
         setDescription(data.full_name)
       })
       .catch(function (error) {
@@ -57,7 +58,7 @@ const Document = () => {
       })
   }, [])
   useEffect(() => {
-    fetch(`http://487346.msk-kvm.ru:3333/documents/${id}/articles`, {
+    fetch(`${baseUrl}/documents/${id}/articles`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -77,7 +78,7 @@ const Document = () => {
       })
   }, [])
   useEffect(() => {
-    fetch(`http://487346.msk-kvm.ru:3333/segments`, {
+    fetch(`${baseUrl}/segments`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -96,6 +97,49 @@ const Document = () => {
         console.log(error)
       })
   }, [])
+
+  const [isSuccessfullySaved, setIsSuccessfullySaved] = React.useState(false)
+  const [isMessageUnauthorized, setIsMessageUnauthorized] = React.useState(false)
+
+  const saveDocument = () => {
+    console.log(authToken)
+    const reqBody = {
+      short_name: name,
+      date: new Date(date).toJSON(),
+      full_name: description,
+    }
+    const reqJSON = JSON.stringify(reqBody)
+    const isPOST = (id ?? -1) <= 0
+    const requestOptions = {
+      method: isPOST ? 'POST' : 'PATCH',
+      headers: { 'Content-Type': 'application/javascript', token: authToken },
+      body: reqJSON,
+      redirect: 'follow',
+    }
+    const fetchUrl = isPOST ? `${baseUrl}/documents` : `${baseUrl}/documents/${id}`
+    fetch(fetchUrl, requestOptions)
+      .then((response) => {
+        if (!response.ok) {
+          if (response.status == '401') {
+            setIsMessageUnauthorized(true)
+          }
+          console.log(response)
+          console.log(response.status)
+          alert('Error while save document')
+          return null
+        }
+        return response.json()
+      })
+      .then((data) => {
+        console.log(data)
+        setId(data.id)
+        setIsSuccessfullySaved(true)
+        setTimeout(setIsSuccessfullySaved, 5 * 1000, false)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }
 
   const [name, setName] = React.useState('')
   const [date, setDate] = React.useState('')
@@ -179,11 +223,36 @@ const Document = () => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" className="px-4">
+                        <CButton color="primary" className="px-4" onClick={saveDocument}>
                           Сохранить
                         </CButton>
                       </CCol>
                     </CRow>
+                    {isSuccessfullySaved ? (
+                      <CRow className="mt-3">
+                        <CCol xs={12}>
+                          <div className="alert alert-success" role="alert">
+                            Сохранено
+                          </div>
+                        </CCol>
+                      </CRow>
+                    ) : (
+                      <></>
+                    )}
+                    {isMessageUnauthorized ? (
+                      <CRow className="mt-3">
+                        <CCol xs={12}>
+                          <div className="alert alert-danger" role="alert">
+                            Пользователь не аутентифицирован. <br />
+                            <a href={'./#/login'} className={'alert-link'}>
+                              Войти
+                            </a>
+                          </div>
+                        </CCol>
+                      </CRow>
+                    ) : (
+                      <></>
+                    )}
                   </CForm>
                   <CHeader>Статьи</CHeader>
                   <CTable>
