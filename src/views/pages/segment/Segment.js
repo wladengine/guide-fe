@@ -114,7 +114,7 @@ const Segment = () => {
   const saveSegment = () => {
     const reqBody = {
       article_id: parseInt(article),
-      number: parseFloat(number),
+      number: number,
       text: text,
     }
     const reqJSON = JSON.stringify(reqBody)

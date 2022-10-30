@@ -110,7 +110,7 @@ const Article = () => {
   const saveArticle = () => {
     const reqBody = {
       document: parseInt(document),
-      number: parseFloat(number),
+      number: number,
       name: name,
       segments: segmentIds,
     }
