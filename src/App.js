@@ -24,6 +24,7 @@ const Parameter = React.lazy(() => import('./views/pages/parameter/Parameter'))
 const DocumentsList = React.lazy(() => import('./views/pages/document-list/DocumentList'))
 const FeatureList = React.lazy(() => import('./views/pages/feature-list/FeatureList'))
 const ParameterList = React.lazy(() => import('./views/pages/parameter-list/ParameterList'))
+const Dashboard = React.lazy(() => import('./views/pages/dashboard/Dashboard'))
 
 const App = () => {
   let token = getCookie('authToken')
@@ -57,6 +58,7 @@ const App = () => {
               name="Характеристики"
               element={<ParameterList id={-1} />}
             />
+            <Route exact path="/dashboard" name="Витрина" element={<Dashboard />} />
             <Route exact path="/404" name="Page 404" element={<Page404 />} />
             <Route exact path="/500" name="Page 500" element={<Page500 />} />
             <Route path="*" name="Home" element={<DocumentsList />} />
