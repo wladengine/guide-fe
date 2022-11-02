@@ -15,9 +15,11 @@ import {
 
 const Dashboard = (props) => {
   const [groups, setGroups] = React.useState(null)
+  const [products, setProducts] = React.useState(null)
   const [documents, setDocuments] = React.useState(null)
   const [foundFeatures, setFoundFeatures] = React.useState(null)
   const [filterParams, setFilterParams] = React.useState([-1])
+  const [productParams, setProductParams] = React.useState([-1])
   const [documentParams, setDocumentParams] = React.useState([-1])
   const baseUrl = 'http://487346.msk-kvm.ru:3333'
 
@@ -36,6 +38,26 @@ const Dashboard = (props) => {
       })
       .then((data) => {
         setGroups(data)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }, [])
+  useEffect(() => {
+    fetch(`${baseUrl}/products`, {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
+    })
+      .then((response) => {
+        return response.json()
+      })
+      .then((data) => {
+        setProducts(data)
       })
       .catch(function (error) {
         console.log(error)
@@ -63,33 +85,21 @@ const Dashboard = (props) => {
   }, [])
   useEffect(() => {
     setFilterParams([])
-    setDocumentParams([])
+    setProductParams([])
   }, [])
   useEffect(() => {
-    console.log(
-      `call filterFeatures(): filterParams = ${typeof filterParams}, documentParams = ${typeof documentParams}`,
-    )
-    if (typeof filterParams == 'undefined' || typeof documentParams == 'undefined') {
-      console.log(
-        `typeof filterParams = ${typeof filterParams}, typeof documentParams = ${typeof documentParams}`,
-      )
-    } else if (filterParams == null || documentParams == null) {
-      console.log(`filterParams = ${filterParams}, documentParams = ${documentParams}`)
+    console.log(`call filterFeatures(): productParams = ${typeof productParams}`)
+    if (typeof productParams == 'undefined') {
+      console.log(`typeof productParams = ${typeof productParams}`)
+    } else if (filterParams == null || productParams == null) {
+      console.log(`productParams = ${productParams}`)
     } else {
-      console.log(`filterParams = ${[...filterParams]}, documentParams = ${[...documentParams]}`)
-      let urlParamFilters = ''
+      console.log(`productParams = ${[...productParams]}`)
       let urlDocumentFilters = ''
       let hasValidFilters = false
-      if (typeof filterParams != 'undefined' && filterParams.length > 0) {
+      if (typeof productParams != 'undefined' && productParams.length > 0) {
         hasValidFilters = true
-        filterParams.map((val, index) => {
-          urlParamFilters = urlParamFilters + `&segment_id=${val}`
-        })
-      }
-      if (typeof documentParams != 'undefined' && documentParams.length > 0) {
-        hasValidFilters = true
-        documentParams.map((val, index) => {
-          console.log(val)
+        productParams.forEach((val, index) => {
           urlDocumentFilters = urlDocumentFilters + `&product_id=${val}`
         })
       }
@@ -97,8 +107,8 @@ const Dashboard = (props) => {
         setFoundFeatures(null)
         return
       }
-      console.log(`${baseUrl}/features?${urlParamFilters}${urlDocumentFilters}`)
-      fetch(`${baseUrl}/features?${urlParamFilters}${urlDocumentFilters}`, {
+      console.log(`${baseUrl}/features?${urlDocumentFilters}`)
+      fetch(`${baseUrl}/features?${urlDocumentFilters}`, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors',
         headers: {
@@ -117,7 +127,15 @@ const Dashboard = (props) => {
           console.log(error)
         })
     }
-  }, [filterParams, documentParams])
+  }, [filterParams, productParams, documentParams])
+  useEffect(() => {
+    console.log(`documentParams now = ${[...documentParams]}`)
+    console.log(
+      `documentParams.filter((x) => x.id > 0).length now = ${
+        documentParams.filter((x) => x > 0).length
+      }`,
+    )
+  }, [documentParams])
 
   const updateFilterParams = (paramId) => {
     console.log(
@@ -139,21 +157,39 @@ const Dashboard = (props) => {
       )
     }
   }
+  const updateProductParams = (paramId) => {
+    console.log('updateProductParams(', paramId)
+    if (typeof productParams == 'undefined') {
+      console.log(`updateProductParams(${productParams}): typeof documentParams == 'undefined'`)
+    } else if (productParams == null) {
+      console.log(`updateProductParams(${productParams}): documentParams == ${productParams}`)
+    } else if (typeof productParams == 'number' && productParams == paramId) {
+      setProductParams([])
+    } else if (productParams.includes(paramId)) {
+      setProductParams([...productParams.filter((element) => element !== paramId)])
+      console.log(`updateProductParams(${productParams}): removed element`)
+    } else {
+      setProductParams([...productParams, paramId])
+      console.log(
+        `updateProductParams(${filterParams}): added element. ${[...productParams, paramId]}`,
+      )
+    }
+  }
   const updateDocumentParams = (paramId) => {
-    console.log('updateDocumentParams(', paramId)
+    console.log(`call updateDocumentParams(${paramId})`)
     if (typeof documentParams == 'undefined') {
-      console.log(`updateDocumentParams(${documentParams}): typeof documentParams == 'undefined'`)
+      console.log(`updateDocumentParams(${paramId}): typeof documentParams == 'undefined'`)
     } else if (documentParams == null) {
-      console.log(`updateDocumentParams(${documentParams}): documentParams == ${documentParams}`)
+      console.log(`updateDocumentParams(${paramId}): documentParams == ${documentParams}`)
     } else if (typeof documentParams == 'number' && documentParams == paramId) {
       setDocumentParams([])
     } else if (documentParams.includes(paramId)) {
       setDocumentParams([...documentParams.filter((element) => element !== paramId)])
-      console.log(`updateDocumentParams(${documentParams}): removed element`)
+      console.log(`updateDocumentParams(${paramId}): removed element from ${documentParams}`)
     } else {
       setDocumentParams([...documentParams, paramId])
       console.log(
-        `updateDocumentParams(${filterParams}): added element. ${[...documentParams, paramId]}`,
+        `updateDocumentParams(${paramId}): added element. ${[...documentParams, paramId]}`,
       )
     }
   }
@@ -182,7 +218,7 @@ const Dashboard = (props) => {
             )
           })
           return (
-            <div key={index} className="ps-2 pb-2">
+            <div key={`prm_${index}`} className="ps-2 pb-2">
               <b>{val.name}</b>
               <>{filteredParams}</>
             </div>
@@ -193,7 +229,7 @@ const Dashboard = (props) => {
     documents == null
       ? null
       : documents.map((val, index) => {
-          const htmlId = `checkBox_${val.id}`
+          const htmlId = `checkBoxDoc_${val.id}`
           return (
             <div key={index} className="form-check">
               <input
@@ -212,36 +248,80 @@ const Dashboard = (props) => {
           )
         })
 
+  const productsList =
+    products == null
+      ? null
+      : products.map((val, index) => {
+          const htmlId = `checkBoxProd_${val.id}`
+          return (
+            <div key={index} className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value=""
+                id={htmlId}
+                onClick={(e) => {
+                  updateProductParams(val.id)
+                }}
+              />
+              <label className="form-check-label" htmlFor={htmlId}>
+                {val.name}
+              </label>
+            </div>
+          )
+        })
+
   const foundFeaturesList =
     foundFeatures == null
       ? null
       : foundFeatures.map((val, index) => {
           const rowHeader = (
             <CTableHeaderCell key={val.id}>
-              <h6>{val.product.short_name}</h6>
+              <h6>
+                [{val.product.short_name}] {val.product.name}
+              </h6>
               <h6>{val.parameter.name}</h6>
             </CTableHeaderCell>
           )
           const documentList =
-            val.segments == null || documentParams.length == 0
+            val.segments == null || productParams.length == 0
               ? null
-              : documentParams.map((doc, index) => {
-                  const id = `${doc.id}_${index}`
-                  const segmentsList = val.segments
-                    .filter((a) => a.document.id == doc)
-                    .map((val_seg, index) => {
-                      return (
-                        <div key={val_seg.id}>
-                          <b>{val_seg.document.short_name}</b>
-                          <br />
-                          <b>{`ст. ${val_seg.article.number}`}</b>
-                          <br />
-                          <b>{`п. ${val_seg.number}`}</b>
+              : documentParams
+                  .filter((x) => x > 0)
+                  .map((doc, index) => {
+                    const id = `doc${doc}_${index}`
+                    const segmentListsData = val.segments
+                      .filter((a) => a.document.id == doc)
+                      .sort((a, b) => a.id - b.id)
+                    const segmentsList =
+                      segmentListsData.length === 0 ? (
+                        <div className={'card mb-2'}>
+                          <div className={'card-body'}>
+                            <span>Нет данных</span>
+                          </div>
                         </div>
+                      ) : (
+                        segmentListsData.map((val_seg, index) => {
+                          return (
+                            <div className={'card mb-2'} key={val_seg.id}>
+                              <div className={'card-body'}>
+                                <a href={`./#/segment?id=${val_seg.id}`}>
+                                  {`ст. ${val_seg.article.number}`}, {`п. ${val_seg.number}`}
+                                </a>
+                              </div>
+                            </div>
+                          )
+                        })
                       )
-                    })
-                  return <CTableDataCell key={id}>{segmentsList}</CTableDataCell>
-                })
+                    return (
+                      <CTableDataCell key={id}>
+                        <CRow className={'me-2'}>
+                          <b>{doc.short_name}</b>
+                          {segmentsList}
+                        </CRow>
+                      </CTableDataCell>
+                    )
+                  })
           return (
             <CTableRow key={index}>
               {rowHeader}
@@ -250,22 +330,35 @@ const Dashboard = (props) => {
           )
         })
 
-  const selectedProductColumns =
-    documentParams.length > 0 && documents != null && foundFeatures != null ? (
-      documentParams.map((val, index) => {
-        const value = documents.find((x) => x.id == val)
-        return <CTableHeaderCell key={index}>{value.short_name}</CTableHeaderCell>
-      })
+  const selectedDocumentColumns =
+    documentParams.filter((x) => x > 0).length > 0 && documents != null && foundFeatures != null ? (
+      documentParams
+        .filter((x) => x > 0)
+        .map((val, index) => {
+          const value = documents.find((x) => x.id == val)
+          console.log(`finding documents.id = ${val} = ${value}`)
+          return <CTableHeaderCell key={index}>{value.short_name}</CTableHeaderCell>
+        })
     ) : (
-      <CTableHeaderCell>no data</CTableHeaderCell>
+      <CTableHeaderCell>
+        <div className={'card'}>
+          <div className={'card-body'}>
+            <h4>Нет данных</h4>
+          </div>
+        </div>
+      </CTableHeaderCell>
     )
 
   return (
     <CRow>
       <CCol xs={3}>
         <div className="ps-2 pb-2">
+          <b>Законы</b>
+          <div className={'ps-2 pb-2'}>{documentsList}</div>
+        </div>
+        <div className="ps-2 pb-2">
           <b>Продукты</b>
-          <>{documentsList}</>
+          <div className={'ps-2 pb-2'}>{productsList}</div>
         </div>
         <div className="ps-2 pb-2">
           <b>Характеристики</b>
@@ -275,8 +368,10 @@ const Dashboard = (props) => {
       <CCol xs={9}>
         <CTable>
           <CTableHead>
-            <CTableHeaderCell></CTableHeaderCell>
-            {selectedProductColumns}
+            <CTableRow>
+              <CTableHeaderCell></CTableHeaderCell>
+              {selectedDocumentColumns}
+            </CTableRow>
           </CTableHead>
           <CTableBody>{foundFeaturesList}</CTableBody>
         </CTable>
