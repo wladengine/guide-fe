@@ -373,7 +373,7 @@ const Dashboard = (props) => {
     <CRow>
       <CCol xs={3}>
         <div className="ps-2 pb-2">
-          <b>Законы</b>
+          <b>Инструменты</b>
           <div className={'ps-2 pb-2'}>{documentsList}</div>
         </div>
         <div className="ps-2 pb-2">
