@@ -18,9 +18,9 @@ const Dashboard = (props) => {
   const [products, setProducts] = React.useState(null)
   const [documents, setDocuments] = React.useState(null)
   const [foundFeatures, setFoundFeatures] = React.useState(null)
-  const [filterParams, setFilterParams] = React.useState([-1])
-  const [productParams, setProductParams] = React.useState([-1])
-  const [documentParams, setDocumentParams] = React.useState([-1])
+  const [filterParams, setFilterParams] = React.useState([])
+  const [productParams, setProductParams] = React.useState([])
+  const [documentParams, setDocumentParams] = React.useState([])
   const baseUrl = 'http://487346.msk-kvm.ru:3333'
 
   useEffect(() => {
@@ -88,14 +88,25 @@ const Dashboard = (props) => {
     setProductParams([])
   }, [])
   useEffect(() => {
-    console.log(`call filterFeatures(): productParams = ${typeof productParams}`)
-    if (typeof productParams == 'undefined') {
+    console.log(
+      `call filterFeatures(): productParams = ${typeof productParams}, filterParams = ${typeof filterParams}`,
+    )
+    if (
+      typeof productParams == 'undefined' ||
+      typeof filterParams == 'undefined' ||
+      typeof documentParams == 'undefined'
+    ) {
       console.log(`typeof productParams = ${typeof productParams}`)
-    } else if (filterParams == null || productParams == null) {
+      console.log(`typeof filterParams = ${typeof filterParams}`)
+      console.log(`typeof documentParams = ${typeof documentParams}`)
+    } else if (filterParams == null || productParams == null || documentParams == null) {
       console.log(`productParams = ${productParams}`)
+      console.log(`filterParams = ${filterParams}`)
+      console.log(`documentParams = ${documentParams}`)
     } else {
       console.log(`productParams = ${[...productParams]}`)
       let urlDocumentFilters = ''
+      let urlParamsFilters = ''
       let hasValidFilters = false
       if (typeof productParams != 'undefined' && productParams.length > 0) {
         hasValidFilters = true
@@ -103,12 +114,21 @@ const Dashboard = (props) => {
           urlDocumentFilters = urlDocumentFilters + `&product_id=${val}`
         })
       }
+      if (typeof filterParams != 'undefined' && filterParams.length > 0) {
+        hasValidFilters = true
+        filterParams.forEach((val, index) => {
+          urlParamsFilters = urlParamsFilters + `&parameter_id=${val}`
+        })
+      }
+      if (typeof documentParams == 'undefined' || documentParams.length === 0) {
+        hasValidFilters = false
+      }
       if (!hasValidFilters) {
         setFoundFeatures(null)
         return
       }
-      console.log(`${baseUrl}/features?${urlDocumentFilters}`)
-      fetch(`${baseUrl}/features?${urlDocumentFilters}`, {
+      console.log(`${baseUrl}/features?${urlDocumentFilters}${urlParamsFilters}`)
+      fetch(`${baseUrl}/features?${urlDocumentFilters}${urlParamsFilters}`, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors',
         headers: {
@@ -276,7 +296,7 @@ const Dashboard = (props) => {
       ? null
       : foundFeatures.map((val, index) => {
           const rowHeader = (
-            <CTableHeaderCell key={val.id}>
+            <CTableHeaderCell style={{ width: '30%' }} key={val.id}>
               <h6>
                 [{val.product.short_name}] {val.product.name}
               </h6>
@@ -331,7 +351,7 @@ const Dashboard = (props) => {
         })
 
   const selectedDocumentColumns =
-    documentParams.filter((x) => x > 0).length > 0 && documents != null && foundFeatures != null ? (
+    documentParams.filter((x) => x > 0).length > 0 && documents != null ? (
       documentParams
         .filter((x) => x > 0)
         .map((val, index) => {
