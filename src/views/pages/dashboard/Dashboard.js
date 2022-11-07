@@ -11,7 +11,17 @@ import {
   CTableDataCell,
   CCard,
   CHeader,
+  CContainer,
+  CHeaderBrand,
+  CHeaderNav,
+  CNavItem,
+  CNavLink,
+  CHeaderDivider,
 } from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import { logo } from '../../../assets/brand/logo'
+import { AppHeaderDropdown } from '../../../components/header'
+import { AppBreadcrumb } from '../../../components'
 
 const Dashboard = (props) => {
   const [groups, setGroups] = React.useState(null)
@@ -370,33 +380,50 @@ const Dashboard = (props) => {
     )
 
   return (
-    <CRow>
-      <CCol xs={3}>
-        <div className="ps-2 pb-2">
-          <b>Инструменты</b>
-          <div className={'ps-2 pb-2'}>{documentsList}</div>
-        </div>
-        <div className="ps-2 pb-2">
-          <b>Продукты</b>
-          <div className={'ps-2 pb-2'}>{productsList}</div>
-        </div>
-        <div className="ps-2 pb-2">
-          <b>Характеристики</b>
-          <>{paramsFiltersRows}</>
-        </div>
-      </CCol>
-      <CCol xs={9}>
-        <CTable>
-          <CTableHead>
-            <CTableRow>
-              <CTableHeaderCell></CTableHeaderCell>
-              {selectedDocumentColumns}
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>{foundFeaturesList}</CTableBody>
-        </CTable>
-      </CCol>
-    </CRow>
+    <>
+      <CHeader>
+        <CContainer fluid>
+          <CHeaderBrand className="mx-auto d-md-none" to="/">
+            <CIcon icon={logo} height={48} alt="Logo" />
+          </CHeaderBrand>
+          <CHeaderNav className="d-none d-md-flex me-auto">
+            <CNavItem>
+              <CNavLink href="./#/start">Главная</CNavLink>
+            </CNavItem>
+            <CNavItem>
+              <CNavLink href="./#/dashboard">Витрина</CNavLink>
+            </CNavItem>
+          </CHeaderNav>
+        </CContainer>
+      </CHeader>
+      <CRow>
+        <CCol xs={3}>
+          <div className="ps-2 pb-2">
+            <b>Инструменты</b>
+            <div className={'ps-2 pb-2'}>{documentsList}</div>
+          </div>
+          <div className="ps-2 pb-2">
+            <b>Продукты</b>
+            <div className={'ps-2 pb-2'}>{productsList}</div>
+          </div>
+          <div className="ps-2 pb-2">
+            <b>Характеристики</b>
+            <>{paramsFiltersRows}</>
+          </div>
+        </CCol>
+        <CCol xs={9}>
+          <CTable>
+            <CTableHead>
+              <CTableRow>
+                <CTableHeaderCell></CTableHeaderCell>
+                {selectedDocumentColumns}
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>{foundFeaturesList}</CTableBody>
+          </CTable>
+        </CCol>
+      </CRow>
+    </>
   )
 }
 
