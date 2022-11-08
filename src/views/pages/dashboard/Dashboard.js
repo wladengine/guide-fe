@@ -335,9 +335,11 @@ const Dashboard = (props) => {
                           return (
                             <div className={'card mb-2'} key={val_seg.id}>
                               <div className={'card-body'}>
-                                <a href={`./#/segment?id=${val_seg.id}`}>
+                                <b href={`./#/segment?id=${val_seg.id}`}>
                                   {`ст. ${val_seg.article.number}`}, {`п. ${val_seg.number}`}
-                                </a>
+                                </b>
+                                <br />
+                                <p>{val_seg.text}</p>
                               </div>
                             </div>
                           )

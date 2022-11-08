@@ -1,15 +1,34 @@
 import React from 'react'
-import { CContainer, CHeader, CHeaderBrand, CHeaderNav, CNavItem, CNavLink } from '@coreui/react'
+import {
+  CContainer,
+  CHeader,
+  CHeaderToggler,
+  CHeaderBrand,
+  CHeaderNav,
+  CNavItem,
+  CNavLink,
+} from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { logo } from '../../../assets/brand/logo'
+import { useSelector, useDispatch } from 'react-redux'
+import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
 
 const Start = () => {
+  const dispatch = useDispatch()
+  const sidebarShow = useSelector((state) => state.sidebarShow)
+
   return (
     <>
       <CHeader>
         <CContainer fluid>
+          <CHeaderToggler
+            className="ps-1"
+            onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
+          >
+            <CIcon icon={cilMenu} size="lg" />
+          </CHeaderToggler>
           <CHeaderBrand className="mx-auto d-md-none" to="/">
-            <CIcon icon={logo} height={48} alt="Logo" />
+            <CIcon icon={null} height={48} alt="Logo" />
           </CHeaderBrand>
           <CHeaderNav className="d-none d-md-flex me-auto">
             <CNavItem>
