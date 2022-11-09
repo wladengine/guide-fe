@@ -9,41 +9,15 @@ import {
   CNavLink,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { logo } from '../../../assets/brand/logo'
+import { logo } from 'src/assets/brand/logo'
 import { useSelector, useDispatch } from 'react-redux'
 import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
+import AppHeaderReduced from '../../../components/AppHeaderReduced'
 
 const Start = () => {
-  const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
-
   return (
-    <>
-      <CHeader>
-        <CContainer fluid>
-          <CHeaderToggler
-            className="ps-1"
-            onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
-          >
-            <CIcon icon={cilMenu} size="lg" />
-          </CHeaderToggler>
-          <CHeaderBrand className="mx-auto d-md-none" to="/">
-            <CIcon icon={null} height={48} alt="Logo" />
-          </CHeaderBrand>
-          <CHeaderNav className="d-none d-md-flex me-auto">
-            <CNavItem>
-              <CNavLink href="./#/start">Главная</CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink href="./#/dashboard">Витрина</CNavLink>
-            </CNavItem>
-          </CHeaderNav>
-        </CContainer>
-      </CHeader>
+    <AppHeaderReduced>
       <div className={'mt-4 me-4 mb-4 ms-4'}>
-        <h4>
-          Информационно-аналитическая система «Интерактивный справочник инвестора в публичные сферы»
-        </h4>
         <p>
           Повышение доверия частных инвесторов к совместным проектам с участием государственных
           субъектов в публичных целях – одна из важных публичных задач. Открытость и понятность
@@ -83,7 +57,7 @@ const Start = () => {
           консультационных и экспертных услуг инвесторам, органам публичной власти.
         </p>
       </div>
-    </>
+    </AppHeaderReduced>
   )
 }
 

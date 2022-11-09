@@ -20,8 +20,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { logo } from '../../../assets/brand/logo'
-import { AppHeaderDropdown } from '../../../components/header'
-import { AppBreadcrumb } from '../../../components'
+import AppHeaderReduced from '../../../components/AppHeaderReduced'
 
 const Dashboard = (props) => {
   const [groups, setGroups] = React.useState(null)
@@ -382,22 +381,7 @@ const Dashboard = (props) => {
     )
 
   return (
-    <>
-      <CHeader>
-        <CContainer fluid>
-          <CHeaderBrand className="mx-auto d-md-none" to="/">
-            <CIcon icon={logo} height={48} alt="Logo" />
-          </CHeaderBrand>
-          <CHeaderNav className="d-none d-md-flex me-auto">
-            <CNavItem>
-              <CNavLink href="./#/start">Главная</CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink href="./#/dashboard">Витрина</CNavLink>
-            </CNavItem>
-          </CHeaderNav>
-        </CContainer>
-      </CHeader>
+    <AppHeaderReduced>
       <CRow>
         <CCol xs={3}>
           <div className="ps-2 pb-2">
@@ -425,7 +409,7 @@ const Dashboard = (props) => {
           </CTable>
         </CCol>
       </CRow>
-    </>
+    </AppHeaderReduced>
   )
 }
 
