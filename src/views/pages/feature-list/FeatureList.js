@@ -10,8 +10,9 @@ import {
   CTableBody,
   CTableDataCell,
 } from '@coreui/react'
+import AppHeaderAdmin from '../../../components/AppHeaderAdmin'
 
-const FeatureList = (props) => {
+const FeatureList = () => {
   const [features, setFeatures] = React.useState(null)
   useEffect(() => {
     fetch('http://487346.msk-kvm.ru:3333/features', {
@@ -53,7 +54,7 @@ const FeatureList = (props) => {
           )
         })
   return (
-    <>
+    <AppHeaderAdmin>
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -72,7 +73,7 @@ const FeatureList = (props) => {
           </CButton>
         </CCol>
       </CRow>
-    </>
+    </AppHeaderAdmin>
   )
 }
 

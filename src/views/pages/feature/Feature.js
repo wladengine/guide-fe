@@ -26,6 +26,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useContext } from 'react'
 import AuthContext from '../../../components/AuthContext'
 import { Modal } from '@coreui/coreui'
+import AppHeaderAdmin from '../../../components/AppHeaderAdmin'
 
 const Feature = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -446,7 +447,7 @@ const Feature = () => {
     </CTableRow>
   )
   return (
-    <div>
+    <AppHeaderAdmin>
       <CContainer>
         <CRow>
           <CCol lg={12} md={12} sm={12}>
@@ -619,7 +620,7 @@ const Feature = () => {
           </CCol>
         </CRow>
       </CContainer>
-    </div>
+    </AppHeaderAdmin>
   )
 }
 

@@ -10,6 +10,7 @@ import {
   CTableBody,
   CTableDataCell,
 } from '@coreui/react'
+import AppHeaderAdmin from '../../../components/AppHeaderAdmin'
 
 const DocumentList = (props) => {
   const [documents, setDocuments] = React.useState(null)
@@ -53,7 +54,7 @@ const DocumentList = (props) => {
           )
         })
   return (
-    <>
+    <AppHeaderAdmin>
       <CTable>
         <CTableHead>
           <CTableRow>
@@ -72,7 +73,7 @@ const DocumentList = (props) => {
           </CButton>
         </CCol>
       </CRow>
-    </>
+    </AppHeaderAdmin>
   )
 }
 

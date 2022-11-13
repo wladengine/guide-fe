@@ -25,6 +25,7 @@ import { cilHeader, cilCalendar, cilPen } from '@coreui/icons'
 import { useSearchParams } from 'react-router-dom'
 import { useContext } from 'react'
 import AuthContext from '../../../components/AuthContext'
+import AppHeaderAdmin from '../../../components/AppHeaderAdmin'
 
 const Article = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -159,7 +160,7 @@ const Article = () => {
       })
     )
   return (
-    <div>
+    <AppHeaderAdmin>
       <CContainer>
         <CRow>
           <CCol lg={12} md={12} sm={12}>
@@ -252,7 +253,7 @@ const Article = () => {
           </CCol>
         </CRow>
       </CContainer>
-    </div>
+    </AppHeaderAdmin>
   )
 }
 
