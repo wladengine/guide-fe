@@ -23,7 +23,11 @@ const Terms = () => {
   const [searchText, setSearchText] = React.useState('')
   const [btnSearchClick, setBtnSearchClick] = React.useState(0)
   useEffect(() => {
-    fetch(`${baseUrl}/terms`, {
+    let url = `${baseUrl}/terms?`
+    if (searchText != null && searchText.length > 0) {
+      url += 'q=' + searchText
+    }
+    fetch(url, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
       mode: 'cors',
       headers: {
