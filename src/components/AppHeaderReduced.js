@@ -30,7 +30,7 @@ const AppHeaderReduced = ({ children }) => {
               <CNavLink href="./#/map">Карта</CNavLink>
             </CNavItem>
             <CNavItem>
-              <CNavLink href="#">Маркет</CNavLink>
+              <CNavLink href="./#/market">Маркет</CNavLink>
             </CNavItem>
             <CNavItem>
               <CNavLink href="#">Контакты</CNavLink>
