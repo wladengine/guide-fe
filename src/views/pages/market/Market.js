@@ -89,26 +89,50 @@ const Market = () => {
   const realmsList =
     realms == null
       ? null
-      : realms.map((val, index) => {
-          return (
-            <option key={index} value={val.id}>
-              {val.description}
-            </option>
-          )
-        })
+      : realms
+          .sort((a, b) => {
+            const nameA = a.description.toUpperCase()
+            const nameB = b.description.toUpperCase()
+            if (nameA < nameB) {
+              return -1
+            }
+            if (nameA > nameB) {
+              return 1
+            }
+            return 0
+          })
+          .map((val, index) => {
+            return (
+              <option key={index} value={val.id}>
+                {val.description}
+              </option>
+            )
+          })
 
   const actorsList =
     actors == null
       ? null
-      : actors.map((val, index) => {
-          return (
-            <option key={index} value={val.id}>
-              {val.name}
-            </option>
-          )
-        })
+      : actors
+          .sort((a, b) => {
+            const nameA = a.name.toUpperCase()
+            const nameB = b.name.toUpperCase()
+            if (nameA < nameB) {
+              return -1
+            }
+            if (nameA > nameB) {
+              return 1
+            }
+            return 0
+          })
+          .map((val, index) => {
+            return (
+              <option key={index} value={val.id}>
+                {val.name}
+              </option>
+            )
+          })
 
-  const foundFeaturesList =
+  const foundClaimsList =
     foundClaims == null
       ? null
       : foundClaims.map((val, index) => {
@@ -118,8 +142,8 @@ const Market = () => {
                 <h6>
                   [{val.product.short_name}] {val.product.name}
                 </h6>
+                Минимальная сумма: {val.fee.name}
               </CTableHeaderCell>
-              <CTableDataCell>{val.fee.name}</CTableDataCell>
             </CTableRow>
           )
         })
@@ -129,7 +153,7 @@ const Market = () => {
       <CRow>
         <CCol xs={11}>
           <div className="ps-4 pb-2">
-            <b>Выберите realms</b>
+            <b>Выберите сферу инвестирования</b>
             <select
               className="form-select"
               value={realmsParams}
@@ -144,7 +168,7 @@ const Market = () => {
             </select>
           </div>
           <div className="ps-4 pb-2">
-            <b>Выберите actors</b>
+            <b>Выберите вид инвестора</b>
             <select
               className="form-select"
               value={actorsParams}
@@ -162,15 +186,16 @@ const Market = () => {
       </CRow>
       <CRow>
         <CCol xs={11}>
-          <CTable>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell></CTableHeaderCell>
-                {null}
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>{foundFeaturesList}</CTableBody>
-          </CTable>
+          <div className="ps-4 pb-2">
+            <CTable>
+              <CTableHead>
+                <CTableRow>
+                  <CTableHeaderCell></CTableHeaderCell>
+                </CTableRow>
+              </CTableHead>
+              <CTableBody>{foundClaimsList}</CTableBody>
+            </CTable>
+          </div>
         </CCol>
       </CRow>
     </AppHeaderReduced>
