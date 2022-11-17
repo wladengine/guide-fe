@@ -18,6 +18,7 @@ const Market = () => {
   const [foundClaims, setFoundClaims] = React.useState(null)
   const [realmsParams, setRealmsParams] = React.useState(-1)
   const [actorsParams, setActorsParams] = React.useState(-1)
+  const [sumParams, setSumParams] = React.useState(0)
   const baseUrl = 'http://487346.msk-kvm.ru:3333'
 
   useEffect(() => {
@@ -61,11 +62,22 @@ const Market = () => {
       })
   }, [])
   useEffect(() => {
-    if (realmsParams !== -1 && actorsParams !== -1) {
-      let urlRealmsFilters = `&realm_id=${realmsParams}`
-      let urlActorsFilters = `&actor_id=${actorsParams}`
-      console.log(`${baseUrl}/claims?${urlRealmsFilters}${urlActorsFilters}`)
-      fetch(`${baseUrl}/claims?${urlRealmsFilters}${urlActorsFilters}`, {
+    if (realmsParams != -1 || actorsParams != -1 || sumParams != 0) {
+      let urlRealmsFilters = ''
+      if (realmsParams != -1) {
+        urlRealmsFilters = `&realm_id=${realmsParams}`
+      }
+      let urlActorsFilters = ''
+      if (actorsParams != -1) {
+        urlActorsFilters = `&actor_id=${actorsParams}`
+      }
+      let urlSumParams = ''
+      if (sumParams != 0) {
+        urlSumParams = `&min=${sumParams * 100_000_000}`
+      }
+      let fetchUrl = `${baseUrl}/claims?${urlRealmsFilters}${urlActorsFilters}${urlSumParams}`
+      console.log(fetchUrl)
+      fetch(fetchUrl, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors',
         headers: {
@@ -83,8 +95,10 @@ const Market = () => {
         .catch(function (error) {
           console.log(error)
         })
+    } else {
+      setFoundClaims(null)
     }
-  }, [realmsParams, actorsParams])
+  }, [realmsParams, actorsParams, sumParams])
 
   const realmsList =
     realms == null
@@ -142,11 +156,18 @@ const Market = () => {
                 <h6>
                   [{val.product.short_name}] {val.product.name}
                 </h6>
+                {realmsParams == -1 ? <h6>{val.realm.description}</h6> : ''}
                 Минимальная сумма: {val.fee.name}
+                <h6>{val.clause}</h6>
+                <hr />
               </CTableHeaderCell>
             </CTableRow>
           )
         })
+  const foundClaimsCount =
+    foundClaims == null ? 'не найдено' : `найдено ${foundClaims.length} вариантов`
+
+  const sumParamsView = sumParams == 0 ? 'любой' : `от ${sumParams * 100} млн рублей`
 
   return (
     <AppHeaderReduced>
@@ -182,11 +203,28 @@ const Market = () => {
               {actorsList}
             </select>
           </div>
+          <div className="ps-4 pb-2">
+            <b htmlFor="customRange2" className="form-label">
+              Укажите объём инвестирования
+            </b>
+            <input
+              type="range"
+              className="form-range"
+              min="0"
+              max="10"
+              id="customRange2"
+              onChange={(e) => {
+                setSumParams(e.target.value)
+              }}
+            />
+            <span>{sumParamsView}</span>
+          </div>
         </CCol>
       </CRow>
       <CRow>
         <CCol xs={11}>
           <div className="ps-4 pb-2">
+            <b>{foundClaimsCount}</b>
             <CTable>
               <CTableHead>
                 <CTableRow>
