@@ -62,7 +62,7 @@ const Market = () => {
       })
   }, [])
   useEffect(() => {
-    if (realmsParams != -1 || actorsParams != -1 || sumParams != 0) {
+    if (realmsParams != -1 || actorsParams != -1 || sumParams != 10) {
       let urlRealmsFilters = ''
       if (realmsParams != -1) {
         urlRealmsFilters = `&realm_id=${realmsParams}`
@@ -72,8 +72,8 @@ const Market = () => {
         urlActorsFilters = `&actor_id=${actorsParams}`
       }
       let urlSumParams = ''
-      if (sumParams != 0) {
-        urlSumParams = `&min=${sumParams * 100_000_000}`
+      if (sumParams != 10) {
+        urlSumParams = `&max=${sumsValues[sumParams]}`
       }
       let fetchUrl = `${baseUrl}/claims?${urlRealmsFilters}${urlActorsFilters}${urlSumParams}`
       console.log(fetchUrl)
@@ -99,6 +99,23 @@ const Market = () => {
       setFoundClaims(null)
     }
   }, [realmsParams, actorsParams, sumParams])
+
+  const sumsValues = [
+    10_000_000, 50_000_000, 100_000_000, 250_000_000, 500_000_000, 1_000_000_000, 2_000_000_000,
+    3_000_000_000, 5_000_000_000, 10_000_000_000,
+  ]
+  const sumsValuesText = [
+    '10 млн',
+    '50 млн',
+    '100 млн',
+    '250 млн',
+    '500 млн',
+    '1 млрд',
+    '2 млрд',
+    '3 млрд',
+    '5 млрд',
+    '5 млрд',
+  ]
 
   const realmsList =
     realms == null
@@ -167,7 +184,10 @@ const Market = () => {
   const foundClaimsCount =
     foundClaims == null ? 'не найдено' : `найдено ${foundClaims.length} вариантов`
 
-  const sumParamsView = sumParams == 0 ? 'любой' : `от ${sumParams * 100} млн рублей`
+  const sumParamsView =
+    typeof sumParams == 'undefined' || typeof sumsValues[sumParams] == 'undefined'
+      ? 'любой'
+      : `от ${sumsValuesText[sumParams]} рублей`
 
   return (
     <AppHeaderReduced>
