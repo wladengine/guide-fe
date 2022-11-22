@@ -215,12 +215,14 @@ const Dashboard = () => {
       ? null
       : foundFeatures.map((val, index) => {
           const rowHeader = (
-            <CTableHeaderCell style={{ width: '30%' }} key={val.id}>
+            <CTableHeaderCell style={{ width: '20%' }} key={val.id}>
               <h6>{val.parameter.name}</h6>
             </CTableHeaderCell>
           )
+          const count = productParams.length
+          let ColWidth = `${(100 - 20) / count}%`
           const documentList =
-            val.segments == null || productParams.length == 0
+            val.segments == null || count == 0
               ? null
               : productParams
                   .filter((x) => x > 0)
@@ -237,7 +239,7 @@ const Dashboard = () => {
                       ) : (
                         val.segments.map((val_seg, index) => {
                           return (
-                            <div className={'card mb-2'} key={val_seg.id}>
+                            <div key={val_seg.id} className={'card mb-2'}>
                               <div className={'card-body'}>
                                 <b href={`./#/show_segment?id=${val_seg.id}`}>
                                   {val_seg.document.short_name} {`ст. ${val_seg.article.number}`},{' '}
@@ -251,11 +253,9 @@ const Dashboard = () => {
                         })
                       )
                     return (
-                      <CTableDataCell key={id}>
-                        <CRow className={'me-2'}>
-                          <b>{prod.short_name}</b>
-                          {segmentsList}
-                        </CRow>
+                      <CTableDataCell key={id} style={{ width: ColWidth }}>
+                        <b>{prod.short_name}</b>
+                        {segmentsList}
                       </CTableDataCell>
                     )
                   })

@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react'
 import {
   CTable,
-  CButton,
   CCol,
   CRow,
   CTableHead,
   CTableRow,
   CTableHeaderCell,
   CTableBody,
-  CTableDataCell,
 } from '@coreui/react'
 import AppHeaderReduced from '../../../components/AppHeaderReduced'
 

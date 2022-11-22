@@ -21,7 +21,7 @@ const AppHeaderReduced = ({ children }) => {
               <CNavLink href="./#/start">Главная</CNavLink>
             </CNavItem>
             <CNavItem>
-              <CNavLink href="./#/dashboard">Витрина</CNavLink>
+              <CNavLink href="./#/dashboard">Сравнение инвест.инструментов</CNavLink>
             </CNavItem>
             <CNavItem>
               <CNavLink href="./#/terms">Глоссарий</CNavLink>
@@ -30,7 +30,7 @@ const AppHeaderReduced = ({ children }) => {
               <CNavLink href="./#/map">Карта</CNavLink>
             </CNavItem>
             <CNavItem>
-              <CNavLink href="./#/market">Маркет</CNavLink>
+              <CNavLink href="./#/market">ИнвестМаркет</CNavLink>
             </CNavItem>
             <CNavItem>
               <CNavLink href="#">Контакты</CNavLink>
