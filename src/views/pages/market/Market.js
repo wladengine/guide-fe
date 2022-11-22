@@ -207,7 +207,7 @@ const Market = () => {
             </select>
           </div>
           <div className="ps-4 pb-2">
-            <b>Выберите вид инвестора</b>
+            <b>Выберите организационно-правовую форму</b>
             <select
               className="form-select"
               value={actorsParams}
