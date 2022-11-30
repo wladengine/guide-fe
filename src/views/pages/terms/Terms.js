@@ -54,7 +54,10 @@ const Terms = () => {
           return (
             <CTableRow key={index}>
               <CTableDataCell>{value.name}</CTableDataCell>
-              <CTableDataCell>{value.definition}</CTableDataCell>
+              <CTableDataCell>
+                <b>{value.document.short_name}:</b> <br />
+                {value.definition}
+              </CTableDataCell>
             </CTableRow>
           )
         })

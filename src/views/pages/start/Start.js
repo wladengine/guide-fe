@@ -1,17 +1,4 @@
 import React from 'react'
-import {
-  CContainer,
-  CHeader,
-  CHeaderToggler,
-  CHeaderBrand,
-  CHeaderNav,
-  CNavItem,
-  CNavLink,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { logo } from 'src/assets/brand/logo'
-import { useSelector, useDispatch } from 'react-redux'
-import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
 import AppHeaderReduced from '../../../components/AppHeaderReduced'
 
 const Start = () => {
